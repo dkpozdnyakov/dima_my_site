@@ -1,0 +1,189 @@
+<style>
+        *{
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+        body
+        {
+            max-width: 500px;
+            margin: 2em auto;
+            padding: 0 0.5em;
+            font-size: 20px;
+        }
+        h1
+        {
+            text-align: center;
+        }
+        .hidden
+        {
+            display: none;
+        }
+        #custom-notification
+        {
+            margin-top: 1em;
+        }
+        label
+        {
+            display: block;
+        }
+        input[name="title"],
+        textarea
+        {
+            width: 100%;
+        }
+        input[name="title"]
+        {
+            height: 2em;
+        }
+        textarea
+        {
+            height: 5em;
+        }
+        .buttons-wrapper
+        {
+            text-align: center;
+        }
+        .button-demo
+        {
+            padding: 0.5em;
+            margin: 1em;
+        }
+        #log
+        {
+            height: 200px;
+            width: 100%;
+            overflow-y: scroll;
+            border: 1px solid #333333;
+            line-height: 1.3em;
+        }
+        .author
+        {
+            display: block;
+            margin-top: 1em;
+        }
+    </style>
+
+<h1>Web Notifications API</h1>
+
+<p>Доступ к механизму веб-оповещений осуществляется через свойство Notification объекта window.
+    Это конструктор, который позволяет создать экземпляр оповещения. Он принимает два параметра - строку с заголовком оповещения,
+    и опциональный объект с настройками. Перед тем, как создать экземпляр оповещения, давайте взглянем на те настройки, которые мы можем указать:<br>
+    body: строка, использующаяся для указания цели уведомления<br>
+    lang: указывает язык оповещения. Значение должно быть совместимо со стандартом BCP 47. Примеры валидного значения: en-US и it-IT<br>
+    dir: указывает направление текста сообщения. Значение может быть auto, что подразумевает, что направление текста будет определяться браузером,
+    ltr указывает, что текст будет идти слева направо (для европейских языков), или rtl - текст справа налево (для некоторых азиатских языков)<br>
+    tag: строка, использующаяся как идентификатор, которая служит для получения, замещения или удаления оповещения.<br>
+    icon: указывает URL изображения, которое будет использовано в качестве иконки оповещения</p>
+
+<p>Чтобы создать экземпляр объекта Notification, необходимо использовать подобное выражение:</p>
+[html]
+var notification = new Notification('Получено письмо', {
+  body: 'У вас всего 3 непрочитанных письма'
+});
+[/html]
+
+<p>Настройки, которые мы только что разбирали, также доступны как свойства для чтения у экземпляра оповещения.
+    В дополнение к ним, объект Notification также предоставляет свойство permission,
+    которое содержит строку, представляющее текущее разрешение на отображение оповещений. Его значение может быть одним из следующих:</p>
+
+denied - пользователь запретил отображение оповещений<br>
+granted - пользователь разрешил отображение оповещений<br>
+default - выбор пользователя неизвестен<br>
+
+<p>API предоставляет два метода: requestPermission() и close().<br>
+    Как можно догадаться из названия, первый служит для запроса прав на отображение оповещений у пользователя,
+    а второй программно закрывает оповещение. requestPermission() является методом объекта Notification,
+    и опционально принимает функцию обратного вызова, которая выполняется, когда пользователь принимает или отклоняет разрешение.
+    Выбор пользователя передается в функцию обратного вызова параметром, который может принимать значения granted, denied или default.
+    close() - метод экземпляра, и не принимает параметров.</p>
+
+<p>Иногда необходимо выполнить какое-то действие, как только меняется состояние оповещения.
+    Например, мы хотим знать, если пользователь кликнул по оповещению, или же оно было закрыто.
+    Для того, чтобы это сделать, можно навесить обработчик на одно из четырех возможных событий:</p>
+
+onclick - вызывается, когда пользователь кликает по оповещению<br>
+onclose - вызывается, когда пользователь или браузер закрывают оповещение<br>
+onerror - вызывается, если с оповещением случилась ошибка<br>
+onshow - вызывается при отображении оповещения<br>
+
+<p>Простейший пример использования событий показан ниже.</p>
+[html]
+var notification = new Notification('Получено письмо', {
+  body: 'У вас всего 3 непрочитанных письма'
+});
+
+notification.onshow = function() {
+  console.log('Отображено оповещение');
+};
+[/html]
+
+<h4>Пример работы с оповещениями браузера</h4>
+<!-- ************** Начало ************* -->
+<span id="wn-unsupported" class="hidden">API не поддерживается</span>
+
+<form id="custom-notification" action="">
+    <label for="title">Заголовок:</label>
+    <input type="text" id="title" name="title" />
+
+    <label for="body">Тело:</label>
+    <textarea id="body" name="body"></textarea>
+
+    <div class="buttons-wrapper">
+        <button id="button-wn-show-preset" class="button-demo">Показать оповещение по предопределенным настройкам</button>
+        <input type="submit" id="button-wn-show-custom" class="button-demo" value="Показать свое оповещение" />
+    </div>
+</form>
+
+<h3>Log</h3>
+<div id="log"></div>
+<button id="clear-log" class="button-demo">Очистить лог</button>
+
+<script>
+    if (!('Notification' in window)) {
+        document.getElementById('wn-unsupported').classList.remove('hidden');
+        document.getElementById('button-wn-show-preset').setAttribute('disabled', 'disabled');
+        document.getElementById('button-wn-show-custom').setAttribute('disabled', 'disabled');
+    } else {
+        var log = document.getElementById('log');
+        var notificationEvents = ['onclick', 'onshow', 'onerror', 'onclose'];
+
+        function notifyUser(event) {
+            var title;
+            var options;
+
+            event.preventDefault();
+
+            if (event.target.id === 'button-wn-show-preset') {
+                title = 'Получено письмо';
+                options = {
+                    body: 'У вас 3 непрочитанных сообщения',
+                    tag: 'preset',
+                    icon: 'http://www.audero.it/favicon.ico'
+                };
+            } else {
+                title = document.getElementById('title').value;
+                options = {
+                    body: document.getElementById('body').value,
+                    tag: 'custom'
+                };
+            }
+
+            Notification.requestPermission(function() {
+                var notification = new Notification(title, options);
+
+                notificationEvents.forEach(function(eventName) {
+                    notification[eventName] = function(event) {
+                        log.innerHTML = 'Событие "' + event.type + '" выброшено для оповещения "' + notification.tag + '"<br />' + log.innerHTML;
+                    };
+                });
+            });
+        }
+
+        document.getElementById('button-wn-show-preset').addEventListener('click', notifyUser);
+        document.getElementById('button-wn-show-custom').addEventListener('click', notifyUser);
+        document.getElementById('clear-log').addEventListener('click', function() {
+            log.innerHTML = '';
+        });
+    }
+</script>

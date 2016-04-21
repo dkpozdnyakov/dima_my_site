@@ -1,0 +1,70 @@
+.nitti {
+  font-family: Nitti;
+  font-style: normal;
+  font-weight: normal;
+}
+
+.nittibold {
+  font-family: Nitti;
+  font-style: normal;
+  font-weight: bold;
+}
+
+
+body {
+     font-family: Nitti, sans-serif;
+     font-style: normal;
+     font-weight: normal;
+     color: rgb(0, 13, 25);
+     text-align: left;
+     max-width: 55%;
+     margin-left: 6%;
+     margin-top: 7.5%;
+     padding: 0;
+     font-size: 35px;
+     }
+
+a {
+  	color: red;
+    padding-bottom: 0.05em;
+    border-bottom: 0.08em solid rgba(13, 197, 207, 9.2);
+    text-decoration: none;
+}
+
+a:hover {
+	border-bottom-color: rgba(0, 153, 255, 1);
+    color: rgba(0, 123, 250, 110);
+}
+
+h1 {
+			 font-family: Nitti, sans-serif;
+			 font-weight: bold;
+			 font-size: 32px;
+		 }
+
+h3 {
+     	 font-family: Nitti, sans-serif;
+     	 font-weight: normal;
+     	 font-size: 20px;
+    }
+
+/*td {
+      vertical-align: top;
+      display: table-row;
+      text-align: -webkit-right;
+      display: table-cell;
+      vertical-align: inherit;
+}
+
+img {
+  width: 96px;
+  height: 600px;
+  border-top-width: 0px;
+  border-right-width: 0px;
+  border-bottom-width: 0px;
+  border-left-width: 0px;
+  border-top-style: solid;
+  border-right-style: solid;
+  border-bottom-style: solid;
+  border-left-style: solid;
+}*/
